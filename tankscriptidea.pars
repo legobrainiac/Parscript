@@ -1,0 +1,53 @@
+// TODO(tomas): label table that maps to program counter
+//<Label>
+//VM::JumpConditional(Condition, Label);
+
+[ GlobalScope[16] ]
+{
+	[0]		-> DoneCounter;
+	[4]		-> DeltaTime;
+	[8] 	-> ParticleLifeTime;
+	[12]    -> CoolInteger;
+};
+
+[ WorkScope[32] ]
+{
+	[0, 4, 8]	 	-> pos[x, y, z];
+	[12, 16, 20] 	-> dir[x, y, z];
+	[24]			-> gravity;
+	[28]			-> lifetime;
+};
+
+[ LocalScope[8] ]
+{
+	[0] -> MulTemp;
+	[4] -> ShouldHalt;
+};
+
+[ Worker ]()
+{
+    ShouldHalt = Float:: > (lifetime, ParticleLifeTime);
+    VM::HaltConditional(ShouldHalt);
+
+	// Apply direction
+	MulTemp = Float:: * (dir.x, DeltaTime);
+	pos.x = Float:: + (pos.x, MulTemp);
+
+	MulTemp = Float:: * (dir.y, DeltaTime);
+	pos.y = Float:: + (pos.y, MulTemp);
+
+	MulTemp = Float:: * (dir.z, DeltaTime);
+	pos.z = Float:: + (pos.z, MulTemp);
+
+	// Apply gravity
+	MulTemp = Float:: * (gravity, DeltaTime);
+	pos.y = Float:: + (pos.y, MulTemp);
+
+	// Increase life time
+	lifetime = Float:: + (lifetime, DeltaTime);
+
+	// Changes to global scope are thread by default
+	Int:: ++ (DoneCounter);
+
+	CoolInteger = Int:: * (CoolInteger, CoolInteger);
+};
