@@ -29,7 +29,7 @@ namespace ParVm
     private:
         [[nodiscard]] static std::string GetOperandString(const std::string &function, uint64_t operandIdx = 0) noexcept
         {
-            // NOTE(tomas): this works but it's horrible, consider switching over to regex for extraction(CTRE?)
+            // NOTE(tomas): consider switching over to regex for extraction
             // Trim
             int64_t functionStart = function.find('(');
             std::string trimmed = function.substr(functionStart + 1);
@@ -368,8 +368,6 @@ namespace ParVm
     // Runs inline
     void Run(Program *pProgram, void *pGlobalScope, void *pWorkScopes, uint64_t workScopeSize, uint64_t workScopeCount = 1, bool zeroLocalScope = true)
     {
-        // TODO(tomas): scope sizes in program
-
         ////////////////////////////////////////////////////////////////
         // Boilerplate helpers
         #define LOCAL_SCOPE_SIZE 256
@@ -464,9 +462,6 @@ namespace ParVm
         DeclareOp(ADD_INT,              7,{ auto* l = (int*)(pScopes[Operand(0U)] + Operand(1U)); *l = *((int*)((pScopes[Operand(2U)] + Operand(3U)))) + *((int*)((pScopes[Operand(4U)] + Operand(5U)))); }); // ADD_INT &Scope + offset, &Scope + offset
         DeclareOp(SUB_INT,              7,{ auto* l = (int*)(pScopes[Operand(0U)] + Operand(1U)); *l = *((int*)((pScopes[Operand(2U)] + Operand(3U)))) - *((int*)((pScopes[Operand(4U)] + Operand(5U)))); }); // SUB_INT &Scope + offset, &Scope + offset
         DeclareOp(MUL_INT,              7,{ auto* l = (int*)(pScopes[Operand(0U)] + Operand(1U)); *l = *((int*)((pScopes[Operand(2U)] + Operand(3U)))) * *((int*)((pScopes[Operand(4U)] + Operand(5U)))); }); // MUL_FLOAT &Scope + offset, &Scope + offset, &Scope + offset
-
-        ////////////////////////////////////////////////////////////////
-        // Vector arithmetic instructions
     }
 };
 
